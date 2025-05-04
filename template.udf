@@ -1,0 +1,9 @@
+DİLEKÇE
+Ad: {{USERNAME}}
+Tarih: {{DATE}}
+
+Metin:
+{{COMMENT}}
+
+Kanıt URL:
+{{EVIDENCE_URL}}
