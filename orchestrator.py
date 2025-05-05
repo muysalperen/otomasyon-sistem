@@ -1,19 +1,37 @@
-import json, ingestion, download_evidence, classification, screenshot, rpa_uyap
+import time
+import json
+import ingestion
+import download_evidence
+import classification
+import screenshot
+import rpa_uyap
 
-def main():
+def run_pipeline():
+    # 1) İçerik Toplama
     ingestion.ingest_posts()
+    # 2) Kanıt İndirme
     download_evidence.download_evidence()
+    # 3) Sınıflandırma & Onaylama
     data = json.load(open("posts.json"))['data']
-    approved = [p for p in data if not any(classification.classify_text(p.get('caption',"")).get(c) for c in ['hate','violence'])]
-    json.dump({'data':approved}, open("approved_data.json","w"))
+    approved = []
+    for p in data:
+        cats = classification.classify_text(p.get('caption',''))
+        if not any(cats.get(c) for c in ['hate','violence']):
+            approved.append(p)
+    json.dump({'data': approved}, open("approved_data.json","w"))
+    # 4) Ekran Görüntüleri
     screenshot.take_screenshots()
+    # 5) RPA → UYAP
     if approved:
         rpa_uyap.generate_pdf({
             'USERNAME':'Ad Soyad',
-            'DATE':'2025-05-05',
+            'DATE':time.strftime("%Y-%m-%d"),
             'COMMENT':'Onaylanan içerik',
             'EVIDENCE_URL':'https://example.com/evidence'
         })
 
 if __name__=="__main__":
-    main()
+    while True:
+        run_pipeline()
+        # 1 saat bekle (3600 saniye)
+        time.sleep(3600)
