@@ -1,3 +1,5 @@
+# orchestrator.py
+
 import time
 import json
 import ingestion
@@ -32,6 +34,14 @@ def run_pipeline():
 
 if __name__=="__main__":
     while True:
-        run_pipeline()
-        # 1 saat bekle (3600 saniye)
-        time.sleep(3600)
+        try:
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Pipeline başladı.", flush=True)
+            run_pipeline()
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Pipeline tamamlandı. 1 saat sonra tekrar çalışacak.", flush=True)
+            time.sleep(3600)
+        except Exception as e:
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Hata yakalandı: {e}", flush=True)
+            # Hatanın detayını traceback olarak yazmak istersen:
+            import traceback; traceback.print_exc()
+            # 1 dakika bekleyip yeniden dene
+            time.sleep(60)
