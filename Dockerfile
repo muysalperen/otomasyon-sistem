@@ -1,20 +1,13 @@
 # Dockerfile
 
-# Playwright + Python resmi imajı, gerekli glibc ve tarayıcılarla beraber
-FROM mcr.microsoft.com/playwright-python:1.52
+# Playwright için glibc uyumlu resmi Python imajı
+FROM mcr.microsoft.com/playwright-python:v1.52.0
 
 WORKDIR /app
 
-# Önce bağımlılıkları yükleyelim
+# Python bağımlılıklarını yükle
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Uygulama kodunu kopyala
 COPY . .
-
-# Port ayarı
-ENV PORT=5000
-
-# Web süreci için Gunicorn, Worker için Procfile'daki komutu kullanacağız
-# Railway Docker runtime, Procfile içindeki worker sürecini de ayağa kaldırır
-CMD ["bash", "-lc", "honcho start -f Procfile"]
